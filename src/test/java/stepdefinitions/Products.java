@@ -1,5 +1,7 @@
 package stepdefinitions;
 
+import io.cucumber.java.en.And;
+import org.json.simple.JSONObject;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -16,7 +18,9 @@ public class Products {
 	public RequestSpecification request;
 	public Response response;
 	public int ResponseCode;
-	//public ResponseBody body;
+	public RequestSpecification httpRequest;
+	public ResponseBody body;
+	public JSONObject requestParams;
 	
 	
 	@Given("I hit the url of get products api endpoint")
@@ -38,7 +42,7 @@ public class Products {
 	
 	@Then("I verify that the rate of first product is {}")
 	public void i_verify_that_the_rate_of_first_product_is(String rate) {
-		ResponseBody body = response.getBody();
+		body = response.getBody();
 		
 		String responseBody = body.asString();
 		
@@ -47,5 +51,28 @@ public class Products {
 		String rateOfProduct = jsonPath.getJsonObject("rating[0].rate").toString();
 		
 		Assert.assertEquals(rate, rateOfProduct);
+	}
+	
+	@Given("I hit the url of post products api endpoint")
+	public void i_hit_the_url_of_post_products_api_endpoint() {
+		RestAssured.baseURI = "https://fakestoreapi.com/";
+		
+		httpRequest = RestAssured.given();
+		
+		requestParams = new JSONObject();
+		requestParams.put("title", "shoes");
+		requestParams.put("price", 13.5);
+		requestParams.put("description", "Shoes");
+		requestParams.put("image", "https://i.pravatar.cc/");
+		requestParams.put("category", "electronic");
+	}
+	
+	@And("I pass the request body of product title {}")
+	public void iPassTheRequestBodyOfProductTitleProductTitle(String productTitle) {
+		httpRequest.body(requestParams.toJSONString());
+		Response response = httpRequest.post("products");
+		body = response.getBody();
+		System.out.println(response.getStatusLine());
+		System.out.println(body.asString());
 	}
 }
