@@ -13,7 +13,6 @@ import org.testng.Assert;
 import io.restassured.specification.RequestSpecification;
 
 public class Products {
-	public int statusCode;
 	
 	public RequestSpecification request;
 	public Response response;
@@ -43,8 +42,6 @@ public class Products {
 	@Then("I verify that the rate of first product is {}")
 	public void i_verify_that_the_rate_of_first_product_is(String rate) {
 		body = response.getBody();
-		
-		String responseBody = body.asString();
 		
 		JsonPath jsonPath = response.jsonPath();
 		
